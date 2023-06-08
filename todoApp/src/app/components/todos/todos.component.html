@@ -1,0 +1,51 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <mat-card>
+        <div class="col-md-6 text-right">
+          <button mat-mini-fab [routerLink]="['/todo-create']" matTooltip="Regresar" class="mb-5">
+            <mat-icon>add</mat-icon>
+          </button>
+
+        </div>
+        <mat-card-title> Mis Todos</mat-card-title>
+        <br>
+        <br>
+        <mat-card-content>
+
+          <div class="table-responsive">
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%">
+
+
+              <ng-container matColumnDef="todoId">
+                <th mat-header-cell *matHeaderCellDef> No. </th>
+                <td mat-cell *matCellDef="let element"> {{element.todoId}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef> Nombre </th>
+                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef> Descripción </th>
+                <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+              </ng-container>
+
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+
+
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+    <div class="col-md-3"></div>
+  </div>
+
+
+</div>
