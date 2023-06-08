@@ -1,34 +1,55 @@
 const { response, request } = require("express");
-const Todo  = require("../models/Todo.model");
+const Todo = require("../models/Todo.model");
 
-const getTodos = (req= request, res= response) => {
+const getTodos = (req = request, res = response) => {
 
-    const todos = Todo.getAllTodos();
+    try {
+        const todos = Todo.getAllTodos();
+
+        res.status(200).json({
+            status: true,
+            message: 'Datos cargados',
+            data: todos
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            status: false,
+            message: 'Ha ocurrido un error',
+
+        });
+    }
 
 
-
-    res.status(201).json({
-        status: true,
-        message:'Creado correctamente' ,
-        data: todos
-      });
 
 }
 
-const postTodos = (req= request, res= response) => {
+const postTodos = (req = request, res = response) => {
 
-    const { name, description } = req.body;
-
-
-    const todoId = Todo.getSize();
-    Todo.add(todoId, name, description);
+    try {
+        const { name, description } = req.body;
 
 
+        const todoId = Todo.getSize();
+        Todo.add(todoId, name, description);
 
-    res.status(201).json({
-        status: true,
-        message:'Creado correctamente' ,
-      });
+
+
+        res.status(201).json({
+            status: true,
+            message: 'Creado correctamente',
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: 'Ha ocurrido un error',
+
+        });
+    }
+
+
 
 }
 
