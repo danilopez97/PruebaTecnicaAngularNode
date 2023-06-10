@@ -2,33 +2,62 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TodoEditComponent } from './todo-edit.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { HttpClientTestingModule,
-  HttpTestingController } from '@angular/common/http/testing';
-  import { Observable, of, from } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
+import { Observable, of, from } from 'rxjs';
+import { Todo } from 'src/app/models/todo.model';
+import { TodoService } from 'src/app/services/todo.service';
 
 
+class MockTodoService {
+  addTodo(): Observable<any> {
+    const respuesta = [{
+      "status": true,
+      "message": "Creado correctamente"
+  }];
+    const myObservable = from(respuesta);
+    return myObservable;
+  }
 
+
+}
+
+class MockMatSnackBar {
+  open() {}
+}
 
 describe('TodoEditComponent', () => {
   let component: TodoEditComponent;
   let fixture: ComponentFixture<TodoEditComponent>;
-    // @ts-ignore
-    // const service = new TodoService(null);
+  // @ts-ignore
+  // const service = new TodoService(null);
+
+  let service: TodoService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TodoEditComponent ],
+      declarations: [TodoEditComponent],
       imports: [ReactiveFormsModule,
-      FormsModule,
-      MatSnackBarModule,
-      HttpClientTestingModule]
+        FormsModule,
+        MatSnackBarModule,
+        HttpClientTestingModule
+        ],
+        providers: [
+          { provide: TodoService, useClass: MockTodoService },
+          { provide: MatSnackBar, useClass: MockMatSnackBar }
+        ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(TodoEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    service = TestBed.inject(TodoService);
+
   });
 
   xit('should create', () => {
@@ -85,21 +114,17 @@ describe('TodoEditComponent', () => {
     expect(form.invalid).toBeTruthy();
   });
 
+  it('debe agregar un todo a la lista', () => {
 
-  // xit('Debe agregar un nuevo todo al arreglo de Todo', () => {
+    component.form.controls['name'].setValue('Nombre de la tarea');
+    component.form.controls['description'].setValue('Descripcion de la tarea');
 
-  //   const todo = { todoId: 1, nombre: 'Preuba de todo', description:"pueba descripcion todo"};
-  //   const miObservable = of(todo);
-
-  //   spyOn(service, 'addTodoArray').and.returnValue( miObservable );
-
-  //   component.saveLocal();
-
-  //   expect( service.todoArray.length).toBe(1);
+    const spy = spyOn(service, 'addTodo').and.callThrough();
+    component.save();
+    expect(spy).toHaveBeenCalled();
 
 
-
-  // });
+  });
 
 });
 

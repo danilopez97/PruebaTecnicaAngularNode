@@ -13,6 +13,13 @@ export class TodoEditComponent implements OnInit {
 
 
   form!: FormGroup;
+  regex = '[]';
+
+
+  get filterControl() {
+    return this.form.get('description');
+  }
+
 
   constructor(
     private fb: FormBuilder,
@@ -22,26 +29,48 @@ export class TodoEditComponent implements OnInit {
 
     this.form = this.fb.group({
       name: [null, [Validators.required, Validators.minLength(10)]],
-      description: [null, [Validators.required, Validators.minLength(10)]]
-    })
+      description: [null, [Validators.required, Validators.minLength(10), Validators.pattern('^[a-zA-Z ]*$')]]
+    });
+
+
   }
 
   ngOnInit(): void {
   }
 
+  getValidationMessages(formControl: string) {
+    let control = this.form.get(formControl);
+    let messages : string[] = [];
+
+    if (control?.errors) {
+      if (control.errors['required']) {
+        messages.push('Este campo es requerido.');
+      }
+
+      if (control.errors['minlength']) {
+        messages.push(`Este campo debe tener al menos ${control.errors['minlength'].requiredLengh} caracteres.`);
+      }
+
+      if (control.errors['pattern']) {
+        messages.push('Este campo solo puede contener letras y espacios.');
+      }
+    }
+
+    return messages;
+  }
   // guardar datos en memoria
   saveLocal() {
     if(!this.form.valid) {
       return this.openSnackBar("Ingrese los datos faltantes" ,'Ok');
     }
 
-    const data = new Todo().deserialize(JSON.parse(this.form.value));
+    const data = new Todo().deserialize(JSON.parse(JSON.stringify(this.form.value)));
     const totalElements = this.todoService.todoArray.length;
     data.todoId = totalElements + 1;
 
     // this.todoService.todoArray.push(data);
     this.todoService.addTodoArray(data);
-    this.openSnackBar("Agregado correctamente" ,'Ok');
+    return this.openSnackBar("Agregado correctamente" ,'Ok');
 
   }
 
